@@ -27,7 +27,8 @@ The test `test_query_with_partial_overlap` in `tests/unit/test_relevance_scorer.
 
 ## Week 8 — Reproduction & solution planning
 
-**Reproduction commit link:** [add after pushing — will be the commit that adds this section + the reproduction note]
+**Reproduction commit link:** https://github.com/KR-0000/pathreview/commit/8cd16b891866c9f212dd898db30d8ff513a7f570
+
 
 **Reproduction summary:**
 Ran `pytest tests/unit/test_relevance_scorer.py -q` and confirmed `test_query_with_partial_overlap` fails with `assert 1.0 < 0.9`. The chunk fixture contains all 4 query tokens ("python", "django", "web", "framework"), so `RelevanceScorer.score()` correctly returns 1.0 for full coverage, but the test asserts the score must be below 0.9 — confirming the issue is a bad test fixture, not a scorer bug.
