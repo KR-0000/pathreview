@@ -10,11 +10,11 @@
 - `rag/evaluator/relevance_scorer.py` — `RelevanceScorer.score()` and `_tokenize()`: read-only reference to confirm the new fixture produces a genuinely partial overlap ratio; no production code changes expected.
 
 ### Plan
-1. Rewrite the chunk text so it contains only some of the query's tokens (e.g., drop "django" and "framework" from the chunk, or drop enough tokens that overlap is 2/4 or 1/4) while keeping the query as-is or lightly adjusted.
-2. Manually compute the expected overlap ratio for the new fixture (e.g., 2 matching tokens / 4 query tokens = 0.5) and confirm it falls inside a range the assertion can meaningfully check.
-3. Update the assertion bounds if needed so they reflect the real expected ratio, not just widen them to pass.
-4. Run `pytest tests/unit/test_relevance_scorer.py -q` and confirm all tests pass, including the rewritten one.
-5. Re-read the test docstring/name to make sure it still accurately describes what's being tested after the fixture change.
+1. ✅ Rewrite the chunk text so it contains only some of the query's tokens — changed it to "Python is a popular language for many web applications", which keeps "python" and "web" but drops "django" and "framework".
+2. ✅ Manually compute the expected overlap ratio for the new fixture — 2 matching tokens / 4 query tokens = 0.5, comfortably inside `0.3 < score < 0.9`.
+3. ✅ Assertion bounds needed no changes — the original `0.3 < score < 0.9` already describes a genuine partial-overlap case once the fixture is honest.
+4. ✅ Ran `pytest tests/unit/test_relevance_scorer.py -q` — all 19 tests pass, including the rewritten one.
+5. ✅ Re-read the docstring ("Test query with partial overlap returns score between 0 and 1.") — still accurate, no changes needed.
 
 ### Inputs & outputs
 - Input: the `query` string and `chunks` list literals inside the test function body (no function signatures change).
