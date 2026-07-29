@@ -57,7 +57,7 @@ None. One documented (non-blocking) pre-existing issue: `make check` and `make t
 
 ### Check-in 2 (end of week)
 
-**PR link:** [add after opening the PR]
+**PR link:** https://github.com/ascherj/pathreview/pull/365
 
 **Branch:** test/157-relevance-scorer-partial-overlap-fixture
 
@@ -70,4 +70,4 @@ Updated `tests/unit/test_relevance_scorer.py::TestRelevanceScorer::test_query_wi
 **Self-review confirmation:** [x] make check passes  [x] make test-unit passes
 (Both have documented pre-existing failures unrelated to this change — see PR description. My change introduces zero new failures in either: lint/format issues are pre-existing across the repo and in this file even before my edit, and unit tests went from 53 failing to 52 failing, the one fewer being the test this PR fixes.)
 
-**Draft PR feedback received from:** [add once received]
+**Draft PR feedback received from:** none — instructor confirmed peer/mentor review is not required for this assignment, so the PR was opened directly as ready for review rather than as a draft.
