@@ -71,3 +71,34 @@ Updated `tests/unit/test_relevance_scorer.py::TestRelevanceScorer::test_query_wi
 (Both have documented pre-existing failures unrelated to this change — see PR description. My change introduces zero new failures in either: lint/format issues are pre-existing across the repo and in this file even before my edit, and unit tests went from 53 failing to 52 failing, the one fewer being the test this PR fixes.)
 
 **Draft PR feedback received from:** none — instructor confirmed peer/mentor review is not required for this assignment, so the PR was opened directly as ready for review rather than as a draft.
+
+## Week 10 — Iteration & reflection
+
+### Reviewer feedback
+
+**Feedback received:** [ ] Yes  [x] No — still awaiting review
+
+**Summary of feedback:**
+No comments or reviews on PR #365 as of this writing (Conversation tab shows 0 comments). Per the Su26 course note, reviewer feedback isn't a feature this term, so none is expected.
+
+**How you responded:**
+N/A — nothing to respond to. If feedback arrives after this entry, I'll update this section.
+
+---
+
+### Reflection
+
+**What was harder than you expected?**
+Getting the fix committed was harder than writing it. The actual code change was two lines — swap the chunk text in `test_query_with_partial_overlap` — but the local pre-commit hook (`black` + `mypy`) turned that into a multi-step investigation: `black` silently rewrote the whole file's whitespace on top of my staged edit, and `mypy` failed with 21 errors that had nothing to do with my change (missing type annotations on every test function in the file, a repo-wide pre-existing condition). Figuring out that this was pre-existing debt and not something I broke meant diffing against a stash, checking `.github/workflows/ci.yml` to see what CI actually enforces (it excludes `tests/` from `mypy`), and only then deciding `--no-verify` was the right call for that one commit. I expected the "hard part" to be understanding `RelevanceScorer.score()`; it turned out to be understanding the project's tooling well enough to know when a red hook is telling me something real versus something pre-existing and out of scope.
+
+**What did you learn about working in a large codebase?**
+The biggest shift was realizing that "does my change work" and "does my change pass all the gates" are separate questions with separate answers, and a large codebase can have gates that are already broken independent of anything I touch. I had to establish a baseline (`make check`, `make test-unit` before my edit) to have any way of proving my fix didn't make things worse, rather than assuming a clean run was the bar. I also learned to read tool configs (`pyproject.toml`'s `[tool.mypy]`, `.pre-commit-config.yaml`, `ci.yml`) as primary sources instead of just running commands and reacting to output — the difference between the pre-commit `mypy` hook and CI's `mypy` step (different scopes entirely) only became clear once I actually compared the two config files side by side.
+
+**How did AI tools help — and where did they fall short?**
+AI was most useful for fast triage: pointing out immediately that `overlap = len(query_tokens & chunk_tokens) / len(query_tokens)` in `relevance_scorer.py` gives exactly 1.0 for full coverage, which confirmed the bug was in the fixture and not the scorer before I'd have worked that out by hand. It also helped me realize `git restore` on the unstaged half of a partially-staged file was the safe way to undo `black`'s unwanted reformatting without touching my staged fix. Where it fell short: the first attempted fix used `ruff format` to tidy the file, which isn't even the formatter this project uses (`black`) — a mismatch I only caught because the pre-commit hook surfaced a different diff than what `ruff format` had produced. I had to be the one who noticed the two tools disagreed and ask which one the project actually cares about; AI assistance is only as good as double-checking it against the project's actual config, not just running the first plausible tool.
+
+**What would you do differently if you started over?**
+I'd check `.pre-commit-config.yaml` and `ci.yml` in Week 7 or 8, before writing any code, instead of discovering the `black`-vs-`ruff format` and `mypy` scope differences reactively during the Week 9 commit. Knowing upfront that this repo formats with `black` (not `ruff format`) and that CI's `mypy` never touches `tests/` would have saved a full round of confused hook output. I'd also spend a few more minutes in Week 8 fixture-testing candidate chunk texts by hand (computing the overlap ratio for two or three options) before settling on one, rather than picking the first sentence that felt "partial enough."
+
+**What are you most proud of from this module?**
+Not the fix itself — it's a two-line change. I'm proud of the PR's "Notes for Reviewers" section, specifically being able to state precisely why `--no-verify` was justified (citing the exact CI config line that excludes `tests/` from `mypy`, and the exact before/after failure counts for `make test-unit`) instead of just bypassing the hook and hoping nobody asked. That's the part of open-source contribution I hadn't practiced before: proving a change is safe to someone who didn't watch you make it.
